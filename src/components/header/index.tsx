@@ -1,5 +1,5 @@
-import {Button} from "../button"
-import {Input} from "../input"
+import { Button } from '../button';
+import { Input } from '../input';
 
 export function Header() {
   return (
@@ -20,5 +20,5 @@ export function Header() {
         </div>
       </div>
     </header>
-  )
+  );
 }

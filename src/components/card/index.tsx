@@ -1,26 +1,33 @@
-import {type ReactNode} from "react"
+import { type ReactNode } from 'react';
 
 interface QuickLink {
-  label: string
-  count?: number
-  onClick?: () => void
+  label: string;
+  count?: number;
+  onClick?: () => void;
 }
 
 interface CardFooter {
-  label: string
-  onClick?: () => void
+  label: string;
+  onClick?: () => void;
 }
 
 interface CardProps {
-  icon: ReactNode
-  title: string
-  subtitle?: string
-  quickLinks?: QuickLink[]
-  footer?: CardFooter
-  className?: string
+  icon: ReactNode;
+  title: string;
+  subtitle?: string;
+  quickLinks?: QuickLink[];
+  footer?: CardFooter;
+  className?: string;
 }
 
-export function Card({icon, title, subtitle, quickLinks = [], footer, className = ""}: CardProps) {
+export function Card({
+  icon,
+  title,
+  subtitle,
+  quickLinks = [],
+  footer,
+  className = '',
+}: CardProps) {
   return (
     <div
       className={`bg-[#232329] rounded-lg shadow p-4 flex flex-col gap-2 min-w-[260px] max-w-xs ${className}`}
@@ -45,7 +52,7 @@ export function Card({icon, title, subtitle, quickLinks = [], footer, className 
         <div className='mt-2'>
           <div className='text-xs text-zinc-300 font-medium mb-1'>Links rápidos</div>
           <ul className='flex flex-col gap-1'>
-            {quickLinks.map(link => (
+            {quickLinks.map((link) => (
               <li
                 key={link.label}
                 className='flex items-center justify-between text-sm text-zinc-100 cursor-pointer hover:underline'
@@ -81,5 +88,5 @@ export function Card({icon, title, subtitle, quickLinks = [], footer, className 
         </button>
       )}
     </div>
-  )
+  );
 }

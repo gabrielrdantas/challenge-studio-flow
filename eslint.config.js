@@ -14,21 +14,21 @@ export default tsEslint.config(
       'coverage',
       '.eslintcache',
       '.eslintrc.cjs',
-      'routeTree.gen.ts',
-    ],
+      'routeTree.gen.ts'
+    ]
   },
   {
     extends: [js.configs.recommended, ...tsEslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
     languageOptions: {
       ecmaVersion: 2020,
-      globals: globals.browser,
+      globals: globals.browser
     },
     plugins: {
       prettier: prettier,
       import: reactImport,
       'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
+      'react-refresh': reactRefresh
     },
     rules: {
       ...reactHooks.configs.recommended.rules,
@@ -36,7 +36,7 @@ export default tsEslint.config(
       'no-alert': 'error',
       'no-console': 'error',
       'prefer-const': 'error',
-      'no-empty': ['error', { allowEmptyCatch: true }],
+      'no-empty': ['error', {allowEmptyCatch: true}],
       'import/no-duplicates': 'error',
       'import/no-self-import': 'error',
       'import/no-relative-packages': 'error',
@@ -48,7 +48,7 @@ export default tsEslint.config(
       'import/newline-after-import': 'error',
       'import/group-exports': 'error',
       'import/exports-last': 'error',
-      'import/no-useless-path-segments': ['error', { noUselessIndex: true }],
+      'import/no-useless-path-segments': ['error', {noUselessIndex: true}],
 
       '@typescript-eslint/no-explicit-any': 'error',
       '@typescript-eslint/no-non-null-assertion': 'error',
@@ -58,9 +58,8 @@ export default tsEslint.config(
       'react-hooks/rules-of-hooks': 'error',
       'react-hooks/exhaustive-deps': 'error',
 
-      'indent': ['error', 2],
-      'quotes': ['error', 'single'],
-      'semi': ['error', 'always'],
+      quotes: ['error', 'single'],
+      semi: ['error', 'always'],
       'comma-dangle': ['error', 'always-multiline'],
 
       'prettier/prettier': [
@@ -86,21 +85,20 @@ export default tsEslint.config(
             {
               files: ['**/package.json'],
               options: {
-                useTabs: false,
-              },
+                useTabs: false
+              }
             },
             {
               files: ['**/.mdx'],
               options: {
                 proseWrap: 'preserve',
-                htmlWhitespaceSensitivity: 'ignore',
-              },
-            },
-          ],
-        },
+                htmlWhitespaceSensitivity: 'ignore'
+              }
+            }
+          ]
+        }
       ],
-      'react-refresh/only-export-components': ['warn', { allowConstantExport: true }],
-
-    },
-  },
+      'react-refresh/only-export-components': ['warn', {allowConstantExport: true}]
+    }
+  }
 );

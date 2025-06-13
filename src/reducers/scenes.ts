@@ -1,6 +1,7 @@
 type Scene = {
   id: string;
   title: string;
+  position: number;
   description: string;
   step: number;
   columnId: string;

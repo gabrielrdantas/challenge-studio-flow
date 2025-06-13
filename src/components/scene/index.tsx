@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 
-import { useDraggable } from '@dnd-kit/core';
+import { useSortable } from '@dnd-kit/sortable';
+
 import { CSS } from '@dnd-kit/utilities';
 
 import { type Scene as SceneType } from '../../reducers/scenes';
@@ -43,7 +44,7 @@ const Scene = ({
     return heavyComputation(description);
   }, [description]);
 
-  const { attributes, listeners, setNodeRef, transform, active } = useDraggable({
+  const { attributes, listeners, setNodeRef, transform, active } = useSortable({
     id,
     attributes: { role: 'button' },
     data: {

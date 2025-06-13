@@ -1,14 +1,17 @@
 import { useEffect, useReducer, useState } from 'react';
 
 import {
+  type Active,
   DndContext,
   type DragEndEvent,
   DragOverlay,
   type DragStartEvent,
+  type Over,
   PointerSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
+import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { ArrowLeftIcon, PlayIcon } from 'lucide-react';
 
 import { Button } from '../../components/button';
@@ -36,7 +39,6 @@ const Studio = () => {
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
-
     setActiveScene({
       id: active.id as string,
       step: active.data.current?.step,
@@ -49,25 +51,50 @@ const Studio = () => {
     });
   };
 
-  const handleDragEnd = (event: DragEndEvent) => {
-    setActiveScene(null);
+  const sortableScene = (fromScene: SceneDetails, toScene: SceneDetails) => {
+    const currentScenes = state.scenes.filter((s) => s.step === fromScene.step);
+    const fromIndex = currentScenes.findIndex((s) => s.id === fromScene.id);
+    const toIndex = currentScenes.findIndex((s) => s.id === toScene.id);
+    const reordered = arrayMove(currentScenes, fromIndex, toIndex);
+    const updatedScenes = [...state.scenes.filter((s) => s.step !== fromScene.step), ...reordered];
+    dispatch({ type: 'SET_SCENES', payload: updatedScenes });
+  };
 
-    const { active, over } = event;
+  const isSameStep = (fromScene: SceneDetails, toScene: SceneDetails) => {
+    return fromScene.step === toScene.step;
+  };
 
-    if (!over || active.id === over.id) return;
+  const isNextStep = (fromScene: SceneDetails, toScene: SceneDetails) => {
+    return fromScene.step < toScene.step;
+  };
 
-    const fromStep = active.data.current?.step;
-    const toStep = over.data.current?.step;
-
-    if (typeof toStep !== 'number' || fromStep === toStep) return;
-
+  const moveSceneToStep = (fromScene: SceneDetails, toScene: SceneDetails) => {
+    if (!isNextStep(fromScene, toScene)) return;
     dispatch({
       type: 'MOVE_SCENE',
       payload: {
-        id: active.id as string,
-        toStep,
+        id: fromScene.id as string,
+        toStep: toScene.step,
       },
     });
+  };
+  const handleDragEnd = (event: DragEndEvent) => {
+    const { active, over } = event;
+    if (!active || !over) return;
+    setActiveScene(null);
+
+    const fromScene = state.scenes.find((s) => s.id === (active.id as string));
+    const toScene = state.scenes.find((s) => s.id === (over.id as string));
+
+    if (!fromScene || !toScene) return;
+
+    if (isSameStep(fromScene, toScene)) {
+      sortableScene(fromScene, toScene);
+      return;
+    }
+    if (!isNextStep(fromScene, toScene)) {
+      moveSceneToStep(fromScene, toScene);
+    }
   };
 
   const handleSceneUpdate = (updatedScene: SceneDetails) => {
@@ -135,7 +162,7 @@ const Studio = () => {
   }
 
   return (
-    <div className='w-full bg-background p-4 flex flex-col gap-4 h-full'>
+    <section className='w-full bg-background p-4 flex flex-col gap-4 h-full'>
       <div className='flex items-center gap-4'>
         <Button variant='outline' size='icon' onClick={() => deselectProduction()}>
           <ArrowLeftIcon />
@@ -153,16 +180,21 @@ const Studio = () => {
               label={steps[step]}
               count={state.scenes.filter((s) => s.step === step).length}
             >
-              {state.scenes
-                .filter((scene) => scene.step === step)
-                .map((scene) => (
-                  <Scene key={scene.id} {...scene} onUpdate={handleSceneUpdate} />
-                ))}
+              <SortableContext
+                items={state.scenes.filter((s) => s.step === step)}
+                strategy={verticalListSortingStrategy}
+              >
+                {state.scenes
+                  .filter((scene) => scene.step === step && scene.id !== activeScene?.id)
+                  .map((scene) => (
+                    <Scene key={scene.id} {...scene} onUpdate={handleSceneUpdate} />
+                  ))}
+              </SortableContext>
             </Column>
           ))}
         </DndContext>
       </div>
-    </div>
+    </section>
   );
 };
 

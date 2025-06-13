@@ -12,11 +12,11 @@ Você terá **5 dias** para entregar uma solução que funcione conforme o esper
 
 Este teste serve para avaliar sua capacidade de:
 
-* Compreender e evoluir código existente
-* Resolver bugs e inconsistências
-* Refatorar e estruturar melhor o projeto
-* Implementar novas funcionalidades
-* Tomar decisões técnicas com autonomia e bom senso
+- Compreender e evoluir código existente
+- Resolver bugs e inconsistências
+- Refatorar e estruturar melhor o projeto
+- Implementar novas funcionalidades
+- Tomar decisões técnicas com autonomia e bom senso
 
 ## O que precisa ser feito
 
@@ -47,16 +47,16 @@ A seguir, estão listados alguns comportamentos considerados incorretos que fora
 
 Além dos bugs acima, há outros pontos que merecem atenção:
 
-* Performance insatisfatória ao lidar com listas grandes de cenas
-* Estrutura de código desorganizada e com baixa coesão
-* Ausência de tratamento de erros em pontos críticos
+- Performance insatisfatória ao lidar com listas grandes de cenas
+- Estrutura de código desorganizada e com baixa coesão
+- Ausência de tratamento de erros em pontos críticos
 
 ## Funcionalidades a serem implementadas
 
 Além da correção dos problemas, você deverá implementar duas funcionalidades que **ainda não existem no projeto**:
 
-* Criação de **novas cenas** diretamente no kanban
-* **Reordenação de cenas** dentro de cada coluna (drag and drop entre posições)
+- Criação de **novas cenas** diretamente no kanban
+- **Reordenação de cenas** dentro de cada coluna (drag and drop entre posições)
 
 ## Como rodar o projeto
 
