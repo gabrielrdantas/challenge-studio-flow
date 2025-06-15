@@ -3,7 +3,7 @@ import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { XIcon } from 'lucide-react';
 
-import { type Scene as SceneDetails } from '../../reducers/scenes';
+import { type Scene as SceneDetails } from '../../../services/studio/reducers/scenes';
 
 interface ModalProps {
   isOpen: boolean;
@@ -20,7 +20,7 @@ const steps: Record<number, string> = {
   5: 'Finalizado',
 };
 
-const Modal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
+const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
   const [editedScene, setEditedScene] = useState<SceneDetails | undefined>(scene);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -223,4 +223,4 @@ const Modal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
   );
 };
 
-export { Modal, type SceneDetails };
+export { UpdateSceneModal, type SceneDetails };

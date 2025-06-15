@@ -1,7 +1,11 @@
+import { useState } from 'react';
+
+import { CreateSceneModal } from '../../../modal/studio/create';
 import { Button } from '../button';
 import { Input } from '../input';
 
 export function Header() {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   return (
     <header className='sticky top-0 z-50 flex items-center justify-between w-full gap-8 px-6 py-4 border-b border-border bg-background'>
       <div className='flex items-center gap-12'>
@@ -10,7 +14,7 @@ export function Header() {
 
       <div className='flex items-center gap-2 grow justify-center max-w-xl'>
         <Input placeholder='Pesquisar' className='grow' />
-        <Button variant='default'>Criar</Button>
+        <Button variant='default' onClick={() => setIsModalOpen(true)}>Criar</Button>
       </div>
 
       <div className='flex items-center gap-2'>
@@ -19,6 +23,8 @@ export function Header() {
           JD
         </div>
       </div>
+
+      <CreateSceneModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </header>
   );
 }

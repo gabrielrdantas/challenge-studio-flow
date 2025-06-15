@@ -1,12 +1,10 @@
 import { useEffect, useReducer, useState } from 'react';
 
 import {
-  type Active,
   DndContext,
   type DragEndEvent,
   DragOverlay,
   type DragStartEvent,
-  type Over,
   PointerSensor,
   useSensor,
   useSensors,
@@ -14,13 +12,17 @@ import {
 import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
 import { ArrowLeftIcon, PlayIcon } from 'lucide-react';
 
-import { Button } from '../../components/button';
-import { Card } from '../../components/card';
-import { Column } from '../../components/column';
-import { Scene, type SceneProps } from '../../components/scene';
-import Title from '../../components/title';
-import { useProduction } from '../../hooks/useProduction';
-import { type Scene as SceneDetails, initialSceneState, sceneReducer } from '../../reducers/scenes';
+import { useProduction } from '../../services/studio/hooks/useProduction';
+import {
+  type Scene as SceneDetails,
+  initialSceneState,
+  sceneReducer,
+} from '../../services/studio/reducers/scenes';
+import { Button } from '../../shared/components/button';
+import { Card } from '../../shared/components/card';
+import { Column } from '../../shared/components/column';
+import Title from '../../shared/components/title';
+import { Scene, type SceneProps } from './components/scene';
 
 const steps: Record<number, string> = {
   1: 'Roteirizado',
@@ -32,9 +34,7 @@ const steps: Record<number, string> = {
 
 const Studio = () => {
   const { selectedProduction, productions, selectProduction, deselectProduction } = useProduction();
-
   const [state, dispatch] = useReducer(sceneReducer, initialSceneState);
-
   const [activeScene, setActiveScene] = useState<SceneProps | null>(null);
 
   const handleDragStart = (event: DragStartEvent) => {
@@ -52,11 +52,12 @@ const Studio = () => {
   };
 
   const sortableScene = (fromScene: SceneDetails, toScene: SceneDetails) => {
-    const currentScenes = state.scenes.filter((s) => s.step === fromScene.step);
-    const fromIndex = currentScenes.findIndex((s) => s.id === fromScene.id);
-    const toIndex = currentScenes.findIndex((s) => s.id === toScene.id);
-    const reordered = arrayMove(currentScenes, fromIndex, toIndex);
-    const updatedScenes = [...state.scenes.filter((s) => s.step !== fromScene.step), ...reordered];
+    const currentScenes = state.scenes.filter((scene) => scene.step === fromScene.step);
+    const fromIndex = currentScenes.findIndex((scene) => scene.id === fromScene.id);
+    const toIndex = currentScenes.findIndex((scene) => scene.id === toScene.id);
+    const reorderedScenesColumnSelected = arrayMove(currentScenes, fromIndex, toIndex);
+    const othersScenes = state.scenes.filter((scene) => scene.step !== fromScene.step);
+    const updatedScenes = [...othersScenes, ...reorderedScenesColumnSelected];
     dispatch({ type: 'SET_SCENES', payload: updatedScenes });
   };
 
@@ -83,8 +84,8 @@ const Studio = () => {
     if (!active || !over) return;
     setActiveScene(null);
 
-    const fromScene = state.scenes.find((s) => s.id === (active.id as string));
-    const toScene = state.scenes.find((s) => s.id === (over.id as string));
+    const fromScene = state.scenes.find((scene) => scene.id === (active.id as string));
+    const toScene = state.scenes.find((scene) => scene.id === (over.id as string));
 
     if (!fromScene || !toScene) return;
 
@@ -92,7 +93,7 @@ const Studio = () => {
       sortableScene(fromScene, toScene);
       return;
     }
-    if (!isNextStep(fromScene, toScene)) {
+    if (isNextStep(fromScene, toScene)) {
       moveSceneToStep(fromScene, toScene);
     }
   };
@@ -167,31 +168,34 @@ const Studio = () => {
         <Button variant='outline' size='icon' onClick={() => deselectProduction()}>
           <ArrowLeftIcon />
         </Button>
-        <Title />
+        <Title title={selectedProduction?.name} />
       </div>
       <div className='flex gap-4 overflow-x-auto w-full h-full'>
         <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} sensors={sensors}>
           <DragOverlay>{activeScene ? <Scene {...activeScene} /> : null}</DragOverlay>
-          {[1, 2, 3, 4, 5].map((step) => (
-            <Column
-              key={step}
-              id={`column-${step}`}
-              step={step}
-              label={steps[step]}
-              count={state.scenes.filter((s) => s.step === step).length}
-            >
-              <SortableContext
-                items={state.scenes.filter((s) => s.step === step)}
-                strategy={verticalListSortingStrategy}
+          {[1, 2, 3, 4, 5].map((step) => {
+            const selectedScenesColumn = state.scenes.filter((scene) => scene.step === step);
+            return (
+              <Column
+                key={step}
+                id={`column-${step}`}
+                step={step}
+                label={steps[step]}
+                count={selectedScenesColumn.length}
               >
-                {state.scenes
-                  .filter((scene) => scene.step === step && scene.id !== activeScene?.id)
-                  .map((scene) => (
-                    <Scene key={scene.id} {...scene} onUpdate={handleSceneUpdate} />
-                  ))}
-              </SortableContext>
-            </Column>
-          ))}
+                <SortableContext
+                  items={selectedScenesColumn}
+                  strategy={verticalListSortingStrategy}
+                >
+                  {selectedScenesColumn
+                    .filter((scene) => scene.id !== activeScene?.id)
+                    .map((scene) => (
+                      <Scene key={scene.id} {...scene} onUpdate={handleSceneUpdate} />
+                    ))}
+                </SortableContext>
+              </Column>
+            );
+          })}
         </DndContext>
       </div>
     </section>

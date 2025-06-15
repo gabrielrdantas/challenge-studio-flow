@@ -1,6 +1,6 @@
-import { ProductionProvider } from './contexts/production';
 import Routes from './routes';
-import './styles/global.css';
+import { ProductionProvider } from './services/studio/contexts/production';
+import './shared/styles/global.css';
 
 function App() {
   return (
