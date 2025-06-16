@@ -4,6 +4,7 @@ import { CreateSceneModal } from '../../modals/scene/create';
 import { useScenesContext } from '../../services/studio/hooks/scenes';
 import { Button } from '../button';
 import { Input } from '../input';
+import { Profile } from '../profile';
 
 export function Header() {
   const [search, setSearch] = useState('');
@@ -13,7 +14,6 @@ export function Header() {
 
   useEffect(() => {
     const timeout = setTimeout(() => {
-      console.log('Searching for scenes with title:', search);
       searchScene(search);
     }, 350);
 
@@ -37,12 +37,7 @@ export function Header() {
         </Button>
       </div>
 
-      <div className='flex items-center gap-2'>
-        <span className='text-sm text-muted-foreground'>John Doe</span>
-        <div className='w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium'>
-          JD
-        </div>
-      </div>
+      <Profile />
 
       <CreateSceneModal
         isOpen={isCreateSceneModalOpen}
