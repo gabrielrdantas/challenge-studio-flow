@@ -1,15 +1,20 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 
-import Studio from '../pages/Studio';
-import { Layout } from '../shared/components/layout';
+import { Layout } from '../components/layout';
+import Production from '../pages/production';
+import Studio from '../pages/studio';
 
 const router = createBrowserRouter([
   {
     element: <Layout />,
     children: [
       {
-        path: '/',
+        path: 'production/:id',
         element: <Studio />,
+      },
+      {
+        path: '/',
+        element: <Production />,
       },
     ],
   },

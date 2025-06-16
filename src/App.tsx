@@ -1,11 +1,14 @@
 import Routes from './routes';
-import { ProductionProvider } from './services/studio/contexts/production';
-import './shared/styles/global.css';
+import { ProductionProvider } from './services/production/contexts/production';
+import { ScenesProvider } from './services/studio/context/scenes';
+import './styles/global.css';
 
 function App() {
   return (
     <ProductionProvider>
-      <Routes />
+      <ScenesProvider>
+        <Routes />
+      </ScenesProvider>
     </ProductionProvider>
   );
 }

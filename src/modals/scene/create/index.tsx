@@ -3,12 +3,13 @@ import { Fragment, useState } from 'react';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { XIcon } from 'lucide-react';
 
+import { saveScene } from '../../../services/studio/api';
 import { type Scene as SceneDetails } from '../../../services/studio/reducers/scenes';
 
 interface ModalProps {
   isOpen: boolean;
-  onClose: () => void;
-  onCreate: (scene: SceneDetails) => void;
+  onClose?: () => void;
+  onCreate?: (scene: SceneDetails) => void;
 }
 
 const steps: Record<number, string> = {
@@ -34,26 +35,10 @@ const CreateSceneModal = ({ isOpen, onClose, onCreate }: ModalProps) => {
     setErrorMessage(null);
 
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/scenes`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...newScene,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          version: 1,
-        }),
-      });
+      saveScene(newScene);
 
-      if (!res.ok) {
-        const body = await res.json();
-        throw new Error(body.message || `Erro ${res.status}: falha ao criar a cena`);
-      }
-
-      onCreate(newScene);
-      onClose();
+      onCreate?.(newScene);
+      onClose?.();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao criar cena. Tente novamente.';
       setErrorMessage(message);
@@ -64,7 +49,7 @@ const CreateSceneModal = ({ isOpen, onClose, onCreate }: ModalProps) => {
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
-      <Dialog as='div' className='relative z-50' onClose={onClose}>
+      <Dialog as='div' className='relative z-50' onClose={() => onClose?.()}>
         <TransitionChild
           as={Fragment}
           enter='ease-out duration-300'

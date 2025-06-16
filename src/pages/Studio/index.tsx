@@ -1,4 +1,5 @@
-import { useEffect, useReducer, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 
 import {
   DndContext,
@@ -9,19 +10,14 @@ import {
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { SortableContext, arrayMove, verticalListSortingStrategy } from '@dnd-kit/sortable';
-import { ArrowLeftIcon, PlayIcon } from 'lucide-react';
+import { SortableContext, verticalListSortingStrategy } from '@dnd-kit/sortable';
+import { ArrowLeftIcon } from 'lucide-react';
 
-import { useProduction } from '../../services/studio/hooks/useProduction';
-import {
-  type Scene as SceneDetails,
-  initialSceneState,
-  sceneReducer,
-} from '../../services/studio/reducers/scenes';
-import { Button } from '../../shared/components/button';
-import { Card } from '../../shared/components/card';
-import { Column } from '../../shared/components/column';
-import Title from '../../shared/components/title';
+import { Button } from '../../components/button';
+import { Column } from '../../components/column';
+import Title from '../../components/title';
+import { useProductionContext } from '../../services/production/hooks/production';
+import { useScenesContext } from '../../services/studio/hooks/scenes';
 import { Scene, type SceneProps } from './components/scene';
 
 const steps: Record<number, string> = {
@@ -33,12 +29,22 @@ const steps: Record<number, string> = {
 };
 
 const Studio = () => {
-  const { selectedProduction, productions, selectProduction, deselectProduction } = useProduction();
-  const [state, dispatch] = useReducer(sceneReducer, initialSceneState);
+  const { selectedProduction, deselectProduction, selectProductionById } = useProductionContext();
+  const { scenes, filteredScene, setSortableScene, setNewStepScene, handleSceneUpdate } =
+    useScenesContext();
   const [activeScene, setActiveScene] = useState<SceneProps | null>(null);
+
+  const stepList = useMemo(() => Object.keys(steps).map(Number), []);
+  const { id: productionId } = useParams<{ id: string }>();
+
+  const navigate = useNavigate();
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
+    if (filteredScene.length > 0) {
+      return;
+    }
+
     setActiveScene({
       id: active.id as string,
       step: active.data.current?.step,
@@ -51,147 +57,69 @@ const Studio = () => {
     });
   };
 
-  const sortableScene = (fromScene: SceneDetails, toScene: SceneDetails) => {
-    const currentScenes = state.scenes.filter((scene) => scene.step === fromScene.step);
-    const fromIndex = currentScenes.findIndex((scene) => scene.id === fromScene.id);
-    const toIndex = currentScenes.findIndex((scene) => scene.id === toScene.id);
-    const reorderedScenesColumnSelected = arrayMove(currentScenes, fromIndex, toIndex);
-    const othersScenes = state.scenes.filter((scene) => scene.step !== fromScene.step);
-    const updatedScenes = [...othersScenes, ...reorderedScenesColumnSelected];
-    dispatch({ type: 'SET_SCENES', payload: updatedScenes });
-  };
-
-  const isSameStep = (fromScene: SceneDetails, toScene: SceneDetails) => {
-    return fromScene.step === toScene.step;
-  };
-
-  const isNextStep = (fromScene: SceneDetails, toScene: SceneDetails) => {
-    return fromScene.step < toScene.step;
-  };
-
-  const moveSceneToStep = (fromScene: SceneDetails, toScene: SceneDetails) => {
-    if (!isNextStep(fromScene, toScene)) return;
-    dispatch({
-      type: 'MOVE_SCENE',
-      payload: {
-        id: fromScene.id as string,
-        toStep: toScene.step,
-      },
-    });
-  };
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!active || !over) return;
     setActiveScene(null);
 
-    const fromScene = state.scenes.find((scene) => scene.id === (active.id as string));
-    const toScene = state.scenes.find((scene) => scene.id === (over.id as string));
+    const fromScene = scenes.find((scene) => scene.id === (active.id as string));
+    const toScene = scenes.find((scene) => scene.id === (over.id as string));
 
     if (!fromScene || !toScene) return;
-
-    if (isSameStep(fromScene, toScene)) {
-      sortableScene(fromScene, toScene);
-      return;
-    }
-    if (isNextStep(fromScene, toScene)) {
-      moveSceneToStep(fromScene, toScene);
-    }
-  };
-
-  const handleSceneUpdate = (updatedScene: SceneDetails) => {
-    dispatch({
-      type: 'UPDATE_SCENE',
-      payload: updatedScene,
-    });
-  };
-
-  const fetchScenes = async () => {
-    try {
-      dispatch({ type: 'SET_LOADING', payload: true });
-
-      const response = await fetch(`${import.meta.env.VITE_API_URL}/scenes`);
-      if (!response.ok) throw new Error('Failed to fetch scenes');
-
-      const data = await response.json();
-      dispatch({ type: 'SET_SCENES', payload: data });
-    } catch (err) {
-      dispatch({
-        type: 'SET_ERROR',
-        payload: err instanceof Error ? err.message : 'Unknown error',
-      });
-    } finally {
-      dispatch({ type: 'SET_LOADING', payload: false });
-    }
+    setSortableScene(fromScene, toScene);
+    setNewStepScene(fromScene, toScene);
   };
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        delay: 200,
+        delay: filteredScene.length > 0 ? 99999 : 100,
         tolerance: 5,
       },
     }),
   );
 
-  useEffect(() => {
-    fetchScenes();
-  }, []);
+  const handleBackProduction = () => {
+    deselectProduction();
+    navigate('/');
+  };
 
-  if (!selectedProduction) {
-    return (
-      <div className='w-screen bg-background p-4 flex flex-col gap-4'>
-        <div className='flex flex-wrap gap-4'>
-          {productions.map((production) => (
-            <Card
-              key={production.id}
-              icon={<PlayIcon />}
-              title={production.name}
-              subtitle={production.description}
-              quickLinks={[
-                {
-                  label: 'Ir para produção',
-                  onClick: () => {
-                    selectProduction(production);
-                  },
-                },
-              ]}
-            />
-          ))}
-        </div>
-      </div>
-    );
-  }
+  useCallback(() => {
+    if (!selectedProduction && productionId) {
+      selectProductionById(productionId);
+    }
+  }, [selectedProduction, selectProductionById, productionId]);
 
-  return (
+  return selectedProduction ? (
     <section className='w-full bg-background p-4 flex flex-col gap-4 h-full'>
       <div className='flex items-center gap-4'>
-        <Button variant='outline' size='icon' onClick={() => deselectProduction()}>
+        <Button
+          className='cursor-pointer'
+          variant='outline'
+          size='icon'
+          onClick={() => handleBackProduction()}
+        >
           <ArrowLeftIcon />
         </Button>
-        <Title title={selectedProduction?.name} />
+        <Title title={selectedProduction.name} />
       </div>
       <div className='flex gap-4 overflow-x-auto w-full h-full'>
         <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd} sensors={sensors}>
           <DragOverlay>{activeScene ? <Scene {...activeScene} /> : null}</DragOverlay>
-          {[1, 2, 3, 4, 5].map((step) => {
-            const selectedScenesColumn = state.scenes.filter((scene) => scene.step === step);
+          {stepList.map((step) => {
+            const scenesByStep = scenes.filter((scene) => scene.step === step);
             return (
               <Column
                 key={step}
                 id={`column-${step}`}
                 step={step}
                 label={steps[step]}
-                count={selectedScenesColumn.length}
+                count={scenesByStep.length}
               >
-                <SortableContext
-                  items={selectedScenesColumn}
-                  strategy={verticalListSortingStrategy}
-                >
-                  {selectedScenesColumn
-                    .filter((scene) => scene.id !== activeScene?.id)
-                    .map((scene) => (
-                      <Scene key={scene.id} {...scene} onUpdate={handleSceneUpdate} />
-                    ))}
+                <SortableContext items={scenesByStep} strategy={verticalListSortingStrategy}>
+                  {scenesByStep.map((scene) => (
+                    <Scene key={scene.id} {...scene} onUpdate={handleSceneUpdate} />
+                  ))}
                 </SortableContext>
               </Column>
             );
@@ -199,7 +127,7 @@ const Studio = () => {
         </DndContext>
       </div>
     </section>
-  );
+  ) : null;
 };
 
 export default Studio;

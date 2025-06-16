@@ -3,6 +3,7 @@ import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { XIcon } from 'lucide-react';
 
+import { updateScene } from '../../../services/studio/api';
 import { type Scene as SceneDetails } from '../../../services/studio/reducers/scenes';
 
 interface ModalProps {
@@ -56,22 +57,7 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
     setIsSaving(true);
     setErrorMessage(null);
     try {
-      const res = await fetch(`${import.meta.env.VITE_API_URL}/scenes/${editedScene.id}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          ...editedScene,
-          updatedAt: new Date().toISOString(),
-          version: Math.random(),
-        }),
-      });
-
-      if (!res.ok) {
-        const body = await res.json();
-        throw new Error(body.message || `Erro ${res.status}: falha ao salvar a cena`);
-      }
+      updateScene(editedScene);
 
       onUpdate(editedScene);
       onClose();
