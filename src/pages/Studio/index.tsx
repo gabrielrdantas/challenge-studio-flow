@@ -29,7 +29,7 @@ const steps: Record<number, string> = {
 };
 
 const Studio = () => {
-  const { selectedProduction, deselectProduction, selectProductionById } = useProductionContext();
+  const { selectedProduction, selectProductionById } = useProductionContext();
   const { scenes, filteredScene, setSortableScene, setNewStepScene, handleSceneUpdate } =
     useScenesContext();
   const [activeScene, setActiveScene] = useState<SceneProps | null>(null);
@@ -67,7 +67,10 @@ const Studio = () => {
     const toScene = scenes.find((scene) => scene.id === (over.id as string));
 
     if (!fromScene || !toScene) return;
-    setSortableScene(fromScene, toScene);
+    if (fromScene.step === toScene.step) {
+      setSortableScene(fromScene, toScene);
+      return
+    }
     setNewStepScene(fromScene, toScene);
   };
 
@@ -79,9 +82,9 @@ const Studio = () => {
       },
     }),
   );
+  console.log('filteredScene', filteredScene);
 
   const handleBackProduction = () => {
-    deselectProduction();
     navigate('/');
   };
 
@@ -117,7 +120,7 @@ const Studio = () => {
                 label={steps[step]}
                 count={scenesByStep.length}
               >
-                <SortableContext items={scenesByStep} strategy={verticalListSortingStrategy}>
+                <SortableContext items={scenesByStep.map(scene => scene.id)} strategy={verticalListSortingStrategy}>
                   {scenesByStep.map((scene) => (
                     <Scene key={scene.id} {...scene} onUpdate={handleSceneUpdate} />
                   ))}

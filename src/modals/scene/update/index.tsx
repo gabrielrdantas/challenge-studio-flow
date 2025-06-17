@@ -7,6 +7,10 @@ import { XIcon } from 'lucide-react';
 import { updateScene } from '../../../services/studio/api';
 import { type Scene as SceneDetails } from '../../../services/studio/reducers/SceneReducer';
 
+import DatePicker from 'react-datepicker';
+import { ptBR } from 'date-fns/locale';
+import 'react-datepicker/dist/react-datepicker.css';
+
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -28,8 +32,10 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    setEditedScene(scene);
-  }, []);
+    if(!isOpen) {
+      setEditedScene(scene);
+    }
+  }, [isOpen]);
 
   const statusList = useMemo(() => {
     return Object.values(steps).slice(scene.step - 1, scene.step + 1) as string[];
@@ -56,6 +62,7 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
     if (!editedScene || !onUpdate) return;
     setIsSaving(true);
 
+    debugger;
     try {
       await updateScene(editedScene);
       onUpdate(editedScene);
@@ -153,14 +160,16 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
                         ))}
                       </select>
                     </div>
-
                     <div>
-                      <label className='text-sm font-medium text-primary/70'>Data de Gravação</label>
-                      <input
-                        type='date'
-                        value={editedScene.recordDate}
-                        onChange={(e) => handleChange('recordDate', e.target.value)}
-                        className='mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-primary/50'
+                      <label htmlFor="recordDate" className="block  text-sm font-medium text-primary/70">Data de Gravação</label>
+                      <DatePicker
+                        id="recordDate"
+                        selected={editedScene.recordDate ? new Date(`${editedScene.recordDate}T00:00:00`) : null}
+                        onChange={(date) => handleChange('recordDate', date?.toISOString().split('T')[0] ?? '')}
+                        locale={ptBR}
+                        dateFormat="dd/MM/yyyy"
+                        className="block w-full mt-1 rounded-md border border-border bg-background px-3 py-2 text-primary"
+                        wrapperClassName="w-full"
                       />
                     </div>
 

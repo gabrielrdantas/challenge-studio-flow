@@ -32,10 +32,11 @@ export function Column({ id, step, label, count, description, children }: Column
       setDisabled(false);
       return;
     }
-
+    const currentColumnId = active?.data.current?.columnId;
+    const isSameColumn = id === currentColumnId;
     const isDraggingOverOrigin = step === actual;
-    
-    if (disabled !== isDraggingOverOrigin) {
+
+    if (disabled !== isDraggingOverOrigin && !isSameColumn) {
       setDisabled(isDraggingOverOrigin);
     } 
   }, [active, over, setDisabled, step]);

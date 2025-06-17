@@ -1,10 +1,14 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { XIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { saveScene } from '../../../services/studio/api';
 import { type Scene as SceneDetails } from '../../../services/studio/reducers/SceneReducer';
+
+import DatePicker from 'react-datepicker';
+import { ptBR } from 'date-fns/locale';
+import 'react-datepicker/dist/react-datepicker.css';
 
 interface ModalProps {
   isOpen: boolean;
@@ -28,8 +32,25 @@ const CreateSceneModal = ({ isOpen, onClose, onCreate }: ModalProps) => {
     setNewScene({ ...newScene, [field]: value });
   };
 
+  const validateCreateScene = () => {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0); // Zera horário para comparar apenas a data
+
+    const selectedDate = new Date(newScene.recordDate);
+    selectedDate.setHours(0, 0, 0, 0);
+
+    return selectedDate < today;
+  }
+
   const handleSave = async () => {
     setIsSaving(true);
+
+    if (validateCreateScene()) {
+      toast.error('A data de gravação não pode ser anterior a hoje.');
+      setIsSaving(false);
+      return;
+    }
+
     try {
       await saveScene(newScene);
       onCreate?.(newScene);
@@ -41,6 +62,12 @@ const CreateSceneModal = ({ isOpen, onClose, onCreate }: ModalProps) => {
       setIsSaving(false);
     }
   };
+
+  useEffect(() => {
+    if (!isOpen) {
+      setNewScene({} as SceneDetails);
+    }
+  }, [isOpen]);
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -129,13 +156,15 @@ const CreateSceneModal = ({ isOpen, onClose, onCreate }: ModalProps) => {
                   </div>
 
                   <div>
-                    <label htmlFor="recordDate" className="text-sm font-medium text-primary/70">Data de Gravação</label>
-                    <input
+                    <label htmlFor="recordDate" className="block  text-sm font-medium text-primary/70">Data de Gravação</label>
+                    <DatePicker
                       id="recordDate"
-                      type="date"
-                      value={newScene.recordDate}
-                      onChange={(e) => handleChange('recordDate', e.target.value)}
-                      className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
+                      selected={newScene.recordDate ? new Date(`${newScene.recordDate}T00:00:00`) : null}
+                      onChange={(date) => handleChange('recordDate', date?.toISOString().split('T')[0] ?? '')}
+                      locale={ptBR}
+                      dateFormat="dd/MM/yyyy"
+                      className="block w-full mt-1 rounded-md border border-border bg-background px-3 py-2 text-primary"
+                      wrapperClassName="w-full"
                     />
                   </div>
 

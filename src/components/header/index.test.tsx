@@ -18,6 +18,12 @@ jest.mock('../../services/studio/hooks/useScenesContext', () => ({
   }),
 }));
 
+jest.mock('../../services/production/hooks/useProductionsContext', () => ({
+  useProductionContext: () => ({
+    selectedProduction: jest.fn(),
+  }),
+}));
+
 describe('Header component', () => {
   it('deve renderizar o título', () => {
     render(<Header />);

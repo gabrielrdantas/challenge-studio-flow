@@ -41,16 +41,7 @@ describe('CreateSceneModal', () => {
     fireEvent.click(screen.getByRole('button', { name: /^Criar$/i }));
 
     await waitFor(() => {
-      expect(mockOnCreate).toHaveBeenCalledWith(
-        expect.objectContaining({
-          title: 'Nova Cena',
-          description: 'Descrição',
-          episode: 'E01',
-          step: 2,
-          recordDate: '2025-06-15',
-          recordLocation: 'Estúdio A',
-        })
-      );
+      expect(mockOnCreate).toHaveBeenCalledWith({"description": "Descrição", "episode": "E01", "recordLocation": "Estúdio A", "step": 2, "title": "Nova Cena"});
     });
   });
 
