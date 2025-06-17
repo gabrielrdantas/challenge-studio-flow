@@ -46,11 +46,11 @@ const SceneModal = ({ isOpen, onClose, scene, onFinish }: ModalProps) => {
   };
 
   const validateErrorDate = () => {
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
+    const dateLimit = scene?.recordDate ? new Date(`${scene.recordDate}T00:00:00`): new Date();
+    dateLimit.setHours(0, 0, 0, 0);
     const selected = new Date(`${formData.recordDate}T00:00:00`);
     selected.setHours(0, 0, 0, 0);
-    return selected < today;
+    return selected < dateLimit;
   };
 
   const handleSave = async () => {
@@ -166,7 +166,7 @@ const SceneModal = ({ isOpen, onClose, scene, onFinish }: ModalProps) => {
                        <DatePicker
                          id="recordDate"
                          selected={formData.recordDate ? new Date(`${formData.recordDate}T00:00:00`) : null}
-                         minDate={new Date(`${formData.recordDate}T00:00:00`)}
+                         minDate={scene?.recordDate ? new Date(`${scene.recordDate}T00:00:00`): new Date()}
                          onChange={(date) => handleChange('recordDate', date?.toISOString().split('T')[0] ?? '')}
                          locale={ptBR}
                          dateFormat="dd/MM/yyyy"
@@ -194,9 +194,9 @@ const SceneModal = ({ isOpen, onClose, scene, onFinish }: ModalProps) => {
                          Cancelar
                        </button>
                        <button
-                         onClick={handleSave}
+                         onClick={() => handleSave()}
                          disabled={isSaving}
-                         className='rounded-md bg-primary px-4 py-2 text-sm font-medium text-accent hover:bg-primary/90 disabled:opacity-50'
+                         className='cursor-pointer rounded-md bg-primary px-4 py-2 text-sm font-medium text-accent hover:bg-primary/90 disabled:opacity-50'
                        >
                          {isSaving ? 'Salvando...' : 'Salvar'}
                        </button>

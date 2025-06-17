@@ -39,7 +39,7 @@ export function Header() {
 
       {selectedProduction && <div className='flex items-center gap-2 grow justify-center max-w-xl'>
         <Input placeholder='Digite o titulo da cena' className='grow' onInput={handleSearchInput} />
-        <Button variant='default' onClick={() => setIsCreateSceneModalOpen(true)}>
+        <Button className="cursor-pointer" variant='default' onClick={() => setIsCreateSceneModalOpen(true)}>
           Criar
         </Button>
       </div>}

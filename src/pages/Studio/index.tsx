@@ -82,7 +82,6 @@ const Studio = () => {
       },
     }),
   );
-  console.log('filteredScene', filteredScene);
 
   const handleBackProduction = () => {
     navigate('/');

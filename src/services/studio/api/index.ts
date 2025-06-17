@@ -21,7 +21,11 @@ const saveScene = async (newScene: Scene) => {
       version: 1,
     }),
   });
-  // if (!response.ok) throw new Error('Falha ao salvar cena');
+
+   if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Erro ao salvar cena');
+  }
   const data = await response.json();
 
   return data;
@@ -39,8 +43,13 @@ const updateScene = async (editedScene: Scene) => {
       version: Math.random(),
     }),
   });
-  if (!response.ok) throw new Error('Falha ao atualizar cena');
+
+   if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(errorText || 'Erro ao atualizar cena');
+  }
   const data = await response.json();
+  
   return data;
 };
 
