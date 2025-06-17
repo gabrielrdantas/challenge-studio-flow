@@ -1,10 +1,10 @@
 import { useMemo, useState } from 'react';
 
-import { useDraggable } from '@dnd-kit/core';
+import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-import { type Scene as SceneType } from '../../reducers/scenes';
-import { Modal } from '../modal';
+import { UpdateSceneModal } from '../../../../modals/scene/update';
+import { type Scene as SceneType } from '../../../../services/studio/reducers/SceneReducer';
 
 interface SceneProps {
   id: string;
@@ -18,10 +18,6 @@ interface SceneProps {
   onUpdate?: (scene: SceneType) => void;
 }
 
-const heavyComputation = (text: string) => {
-  return text.trim();
-};
-
 const Scene = ({
   id,
   title,
@@ -33,17 +29,9 @@ const Scene = ({
   recordLocation,
   onUpdate,
 }: SceneProps) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isUpdateSceneModalOpen, setIsUpdateSceneModalOpen] = useState(false);
 
-  const computedTitle = useMemo(() => {
-    return heavyComputation(title);
-  }, [title]);
-
-  const computedDescription = useMemo(() => {
-    return heavyComputation(description);
-  }, [description]);
-
-  const { attributes, listeners, setNodeRef, transform, active } = useDraggable({
+  const { attributes, listeners, setNodeRef, transform, active } = useSortable({
     id,
     attributes: { role: 'button' },
     data: {
@@ -68,11 +56,7 @@ const Scene = ({
     recordLocation,
   };
 
-  const handleUpdate = (updatedScene: SceneType) => {
-    if (onUpdate) {
-      onUpdate(updatedScene);
-    }
-  };
+  const handleUpdate = (updatedScene: SceneType) => onUpdate?.(updatedScene);
 
   if (active?.id === id) {
     return (
@@ -83,8 +67,8 @@ const Scene = ({
         className='flex flex-col gap-2 p-2 cursor-pointer bg-primary opacity-50 text-accent rounded-lg border border-border'
       >
         <div className='flex flex-col gap-1'>
-          <span className='text-sm font-medium'>{computedTitle}</span>
-          <span className='text-xs'>{computedDescription}</span>
+          <span className='text-sm font-medium'>{title?.trim()}</span>
+          <span className='text-xs'>{description?.trim()}</span>
         </div>
       </div>
     );
@@ -92,9 +76,9 @@ const Scene = ({
 
   return (
     <div>
-      <Modal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
+      <UpdateSceneModal
+        isOpen={isUpdateSceneModalOpen}
+        onClose={() => setIsUpdateSceneModalOpen(false)}
         scene={sceneDetails}
         onUpdate={handleUpdate}
       />
@@ -106,12 +90,12 @@ const Scene = ({
         }}
         {...listeners}
         {...attributes}
-        onClick={() => setIsModalOpen(true)}
-        className='flex flex-col gap-2 p-2 cursor-pointer bg-primary text-accent rounded-lg border border-border'
+        onClick={() => setIsUpdateSceneModalOpen(true)}
+        className='flex flex-col gap-2 p-2 cursor-pointer bg-primary text-accent rounded-lg border border-border scene-card'
       >
         <div className='flex flex-col gap-1'>
-          <span className='text-sm font-medium'>{computedTitle}</span>
-          <span className='text-xs'>{computedDescription}</span>
+          <span className='text-sm font-medium'>{title.trim()}</span>
+          <span className='text-xs'>{description.trim()}</span>
         </div>
       </div>
     </div>

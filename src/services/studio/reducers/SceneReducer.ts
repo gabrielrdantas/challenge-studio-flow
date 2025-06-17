@@ -11,12 +11,14 @@ type Scene = {
 
 type State = {
   scenes: Scene[];
+  filteredScene: Scene[];
   loading: boolean;
   error: string | null;
 };
 
 const initialSceneState: State = {
   scenes: [],
+  filteredScene: [],
   loading: false,
   error: null,
 };
@@ -26,13 +28,15 @@ type Action =
   | { type: 'MOVE_SCENE'; payload: { id: string; toStep: number } }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'UPDATE_SCENE'; payload: Scene };
+  | { type: 'UPDATE_SCENE'; payload: Scene }
+  | { type: 'SET_SCENES_FILTERED'; payload: Scene[] };
 
 const sceneReducer = (state: State, action: Action): State => {
   switch (action.type) {
     case 'SET_SCENES':
       return { ...state, scenes: action.payload, error: null };
-
+    case 'SET_SCENES_FILTERED':
+      return { ...state, filteredScene: action.payload, error: null };
     case 'MOVE_SCENE':
       return {
         ...state,
@@ -56,7 +60,7 @@ const sceneReducer = (state: State, action: Action): State => {
       return { ...state, error: action.payload };
 
     default:
-      return state;
+      return state ?? initialSceneState;
   }
 };
 

@@ -1,7 +1,29 @@
-import {Button} from "../button"
-import {Input} from "../input"
+import { useEffect, useState } from 'react';
+
+import { CreateSceneModal } from '../../modals/scene/create';
+import { useScenesContext } from '../../services/studio/hooks/useScenesContext';
+import { Button } from '../button';
+import { Input } from '../input';
+import { Profile } from '../profile';
 
 export function Header() {
+  const [search, setSearch] = useState('');
+
+  const [isCreateSceneModalOpen, setIsCreateSceneModalOpen] = useState(false);
+  const { searchScene } = useScenesContext();
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      searchScene(search);
+    }, 350);
+
+    return () => clearTimeout(timeout);
+  }, [search, searchScene]);
+
+  const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setSearch(event.target.value);
+  };
+
   return (
     <header className='sticky top-0 z-50 flex items-center justify-between w-full gap-8 px-6 py-4 border-b border-border bg-background'>
       <div className='flex items-center gap-12'>
@@ -9,16 +31,18 @@ export function Header() {
       </div>
 
       <div className='flex items-center gap-2 grow justify-center max-w-xl'>
-        <Input placeholder='Pesquisar' className='grow' />
-        <Button variant='default'>Criar</Button>
+        <Input placeholder='Digite o titulo da cena' className='grow' onInput={handleSearchInput} />
+        <Button variant='default' onClick={() => setIsCreateSceneModalOpen(true)}>
+          Criar
+        </Button>
       </div>
 
-      <div className='flex items-center gap-2'>
-        <span className='text-sm text-muted-foreground'>John Doe</span>
-        <div className='w-8 h-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground text-sm font-medium'>
-          JD
-        </div>
-      </div>
+      <Profile />
+
+      <CreateSceneModal
+        isOpen={isCreateSceneModalOpen}
+        onClose={() => setIsCreateSceneModalOpen(false)}
+      />
     </header>
-  )
+  );
 }

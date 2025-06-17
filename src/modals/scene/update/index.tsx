@@ -1,64 +1,72 @@
-import {Fragment, useState} from "react"
+import { Fragment, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
-import {Dialog, DialogPanel, DialogTitle, Transition, TransitionChild} from "@headlessui/react"
-import {XIcon} from "lucide-react"
+import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
+import { XIcon } from 'lucide-react';
 
-import {type Scene as SceneDetails} from "../../reducers/scenes"
+import { updateScene } from '../../../services/studio/api';
+import { type Scene as SceneDetails } from '../../../services/studio/reducers/SceneReducer';
 
 interface ModalProps {
-  isOpen: boolean
-  onClose: () => void
-  scene?: SceneDetails
-  onUpdate?: (scene: SceneDetails) => void
+  isOpen: boolean;
+  onClose: () => void;
+  scene: SceneDetails;
+  onUpdate?: (scene: SceneDetails) => void;
 }
 
-const steps: Record = {
-  1: "Roteirizado",
-  2: "Em pré-produção",
-  3: "Em gravação",
-  4: "Em pós-produção",
-  5: "Finalizado"
-}
+const steps: Record<number, string> = {
+  1: 'Roteirizado',
+  2: 'Em pré-produção',
+  3: 'Em gravação',
+  4: 'Em pós-produção',
+  5: 'Finalizado',
+};
 
-const Modal = ({isOpen, onClose, scene, onUpdate}: ModalProps) => {
-  const [editedScene, setEditedScene] = useState<SceneDetails | undefined>(scene)
-  const [isSaving, setIsSaving] = useState(false)
+const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
+  const [editedScene, setEditedScene] = useState<SceneDetails | undefined>(scene);
+
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setEditedScene(scene);
+  }, []);
+
+  const statusList = useMemo(() => {
+    return Object.values(steps).slice(scene.step - 1, scene.step + 1) as string[];
+  }, [scene.step]);
 
   const handleChange = (field: keyof SceneDetails, value: string | number) => {
-    if (!editedScene) return
+    if (!editedScene) return;
 
-    if (field === "recordDate") {
-      const date = new Date(value as string)
-      if (date.toString() === "Invalid Date") {
-        setEditedScene({...editedScene, [field as string]: value})
-        return
+    if (field === 'recordDate') {
+      const date = new Date(value as string);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (date.toString() === 'Invalid Date' || date < today) {
+        setEditedScene({ ...editedScene, [field as string]: value });
+        return;
       }
     }
 
-    setEditedScene({...editedScene, [field]: value})
-  }
+    setEditedScene({ ...editedScene, [field]: value });
+  };
 
   const handleSave = async () => {
-    if (!editedScene || !onUpdate) return
 
-    setIsSaving(true)
+    if (!editedScene || !onUpdate) return;
+    setIsSaving(true);
 
-    await fetch(`${import.meta.env.VITE_API_URL}/scenes/${editedScene.id}`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        ...editedScene,
-        updatedAt: new Date().toISOString(),
-        version: Math.random()
-      })
-    })
-
-    onUpdate(editedScene)
-    onClose()
-    setIsSaving(false)
-  }
+    try {
+      await updateScene(editedScene);
+      onUpdate(editedScene);
+      onClose();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Erro ao salvar cena. Tente novamente.';
+      toast.error(message);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   return (
     <Transition appear show={isOpen} as={Fragment}>
@@ -102,44 +110,44 @@ const Modal = ({isOpen, onClose, scene, onUpdate}: ModalProps) => {
                 {editedScene ? (
                   <div className='space-y-4'>
                     <div>
-                      <h4 className='text-sm font-medium text-primary/70'>Título</h4>
+                      <label className='text-sm font-medium text-primary/70'>Título</label>
                       <input
                         type='text'
                         value={editedScene.title}
-                        onChange={e => handleChange("title", e.target.value)}
+                        onChange={(e) => handleChange('title', e.target.value)}
                         className='mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-primary/50'
                       />
                     </div>
 
                     <div>
-                      <h4 className='text-sm font-medium text-primary/70'>Descrição</h4>
+                      <label className='text-sm font-medium text-primary/70'>Descrição</label>
                       <textarea
                         value={editedScene.description}
-                        onChange={e => handleChange("description", e.target.value)}
+                        onChange={(e) => handleChange('description', e.target.value)}
                         className='mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-primary/50'
                         rows={3}
                       />
                     </div>
 
                     <div>
-                      <h4 className='text-sm font-medium text-primary/70'>Episódio</h4>
+                      <label className='text-sm font-medium text-primary/70'>Episódio</label>
                       <input
                         type='text'
                         value={editedScene.episode}
-                        onChange={e => handleChange("episode", e.target.value)}
+                        onChange={(e) => handleChange('episode', e.target.value)}
                         className='mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-primary/50'
                       />
                     </div>
 
                     <div>
-                      <h4 className='text-sm font-medium text-primary/70'>Status</h4>
+                      <label className='text-sm font-medium text-primary/70'>Status</label>
                       <select
                         value={editedScene.step}
-                        onChange={e => handleChange("step", Number(e.target.value))}
+                        onChange={(e) => handleChange('step', Number(e.target.value))}
                         className='mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-primary/50'
                       >
-                        {Object.entries(steps).map(([value, label]) => (
-                          <option key={value} value={value}>
+                        {statusList.map((label, step) => (
+                          <option key={label + step} value={step + 1}>
                             {label}
                           </option>
                         ))}
@@ -147,21 +155,21 @@ const Modal = ({isOpen, onClose, scene, onUpdate}: ModalProps) => {
                     </div>
 
                     <div>
-                      <h4 className='text-sm font-medium text-primary/70'>Data de Gravação</h4>
+                      <label className='text-sm font-medium text-primary/70'>Data de Gravação</label>
                       <input
                         type='date'
                         value={editedScene.recordDate}
-                        onChange={e => handleChange("recordDate", e.target.value)}
+                        onChange={(e) => handleChange('recordDate', e.target.value)}
                         className='mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-primary/50'
                       />
                     </div>
 
                     <div>
-                      <h4 className='text-sm font-medium text-primary/70'>Local de Gravação</h4>
+                      <label className='text-sm font-medium text-primary/70'>Local de Gravação</label>
                       <input
                         type='text'
                         value={editedScene.recordLocation}
-                        onChange={e => handleChange("recordLocation", e.target.value)}
+                        onChange={(e) => handleChange('recordLocation', e.target.value)}
                         className='mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-primary/50'
                       />
                     </div>
@@ -178,7 +186,7 @@ const Modal = ({isOpen, onClose, scene, onUpdate}: ModalProps) => {
                         disabled={isSaving}
                         className='rounded-md bg-primary px-4 py-2 text-sm font-medium text-accent hover:bg-primary/90 disabled:opacity-50'
                       >
-                        {isSaving ? "Salvando..." : "Salvar"}
+                        {isSaving ? 'Salvando...' : 'Salvar'}
                       </button>
                     </div>
                   </div>
@@ -191,7 +199,7 @@ const Modal = ({isOpen, onClose, scene, onUpdate}: ModalProps) => {
         </div>
       </Dialog>
     </Transition>
-  )
-}
+  );
+};
 
-export {Modal, type SceneDetails}
+export { UpdateSceneModal, type SceneDetails };

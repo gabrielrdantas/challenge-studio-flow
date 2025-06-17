@@ -25,21 +25,22 @@ export function Column({ id, step, label, count, description, children }: Column
   });
 
   useEffect(() => {
-    if (!over) {
+    
+    const actual = active?.data.current?.step;
+
+    if (!over || actual === undefined) {
       setDisabled(false);
       return;
     }
 
-    const actual = active?.data.current?.step;
-
-    if (actual) {
-      const isDisabled = step === actual;
-      setDisabled(isDisabled);
-    } else {
-      setDisabled(false);
-    }
+    const isDraggingOverOrigin = step === actual;
+    
+    if (disabled !== isDraggingOverOrigin) {
+      setDisabled(isDraggingOverOrigin);
+    } 
   }, [active, over, setDisabled, step]);
 
+  
   return (
     <div
       ref={setNodeRef}
