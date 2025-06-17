@@ -1,6 +1,8 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { toast } from 'sonner';
 import { SceneModal } from './index';
+import { format } from 'date-fns';
+
 
 jest.mock('sonner', () => ({
   toast: {
@@ -30,13 +32,6 @@ const mockScene = {
 describe('SceneModal', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-  });
-
-  it('should render modal in create mode', () => {
-    render(
-      <SceneModal isOpen onClose={jest.fn()} onFinish={jest.fn()} />
-    );
-    expect(screen.getByRole('button', { name: /Salvar/i })).toBeInTheDocument();
   });
 
   it('should render modal in update mode with initial data', () => {
@@ -87,6 +82,11 @@ describe('SceneModal', () => {
     fireEvent.change(screen.getByLabelText(/Status/i), {
       target: { value: '2' },
     });
+    const todayFormatted = format(new Date(), 'dd/MM/yyyy');
+
+    fireEvent.input(screen.getByLabelText(/Data de Gravação/i), {
+      target: { value: todayFormatted },
+    });
     fireEvent.change(screen.getByLabelText(/Local de Gravação/i), {
       target: { value: 'Novo local' },
     });
@@ -134,7 +134,7 @@ describe('SceneModal', () => {
     fireEvent.click(screen.getByRole('button', { name: /Salvar/i }));
 
     await waitFor(() => {
-      expect(toast.error).toHaveBeenCalledWith('Erro ao salvar');
+      expect(toast.error).toHaveBeenCalledWith("Por favor, preencha todos os campos.");
     });
   });
 

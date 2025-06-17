@@ -9,7 +9,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 
 import { saveScene, updateScene } from '../../services/studio/api';
 import { type Scene as SceneDetails } from '../../services/studio/reducers/SceneReducer';
-
+import { useValidateSceneForm } from '../../services/studio/hooks/useValidateSceneForm';
 interface ModalProps {
   isOpen: boolean;
   onClose: () => void;
@@ -29,6 +29,8 @@ const SceneModal = ({ isOpen, onClose, scene, onFinish }: ModalProps) => {
   const isEdit = !!scene;
   const [formData, setFormData] = useState<SceneDetails>(scene || ({} as SceneDetails));
   const [isSaving, setIsSaving] = useState(false);
+
+  const isValid = useValidateSceneForm(formData);
 
   const statusList = useMemo(() => {
     if (!isEdit) return Object.values(steps);
@@ -54,6 +56,12 @@ const SceneModal = ({ isOpen, onClose, scene, onFinish }: ModalProps) => {
   };
 
   const handleSave = async () => {
+    
+    if (!isValid) {
+      toast.error('Por favor, preencha todos os campos.');
+      return;
+    }
+
     if (validateErrorDate()) {
       toast.error('A data de gravação não pode ser anterior a hoje.');
       return;
@@ -150,10 +158,10 @@ const SceneModal = ({ isOpen, onClose, scene, onFinish }: ModalProps) => {
                        <label htmlFor="step" className='text-sm font-medium text-primary/70'>Status</label>
                        <select
                           id="step"
-                          value={formData.step}
                           onChange={(e) => handleChange('step', Number(e.target.value))}
                           className='mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-primary/50'
                        >
+                        { !scene?.step && <option>selecione o status</option> }
                          {statusList.map((label, step) => (
                            <option key={label + step} value={step + 1}>
                              {label}
