@@ -3,7 +3,7 @@ import { useMemo, useState } from 'react';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
-import { UpdateSceneModal } from '../../../../modals/scene/update';
+import { SceneModal } from '../../../../modals/scene';
 import { type Scene as SceneType } from '../../../../services/studio/reducers/SceneReducer';
 
 interface SceneProps {
@@ -81,11 +81,11 @@ const Scene = ({
 
   return (
     <div>
-      <UpdateSceneModal
+      <SceneModal
         isOpen={isUpdateSceneModalOpen}
         onClose={() => setIsUpdateSceneModalOpen(false)}
         scene={sceneDetails}
-        onUpdate={handleUpdate}
+        onFinish={handleUpdate}
       />
 
       <div

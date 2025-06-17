@@ -3,8 +3,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { Header } from './index';
 
 // Mock dos componentes filhos
-jest.mock('../../modals/scene/create', () => ({
-  CreateSceneModal: ({ isOpen }: { isOpen: boolean }) =>
+jest.mock('../../modals/scene', () => ({
+  SceneModal: ({ isOpen }: { isOpen: boolean }) =>
     isOpen ? <div data-testid='modal'>Modal Aberto</div> : null,
 }));
 

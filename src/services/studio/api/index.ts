@@ -21,8 +21,9 @@ const saveScene = async (newScene: Scene) => {
       version: 1,
     }),
   });
-  if (!response.ok) throw new Error('Falha ao salvar cena');
+  // if (!response.ok) throw new Error('Falha ao salvar cena');
   const data = await response.json();
+
   return data;
 };
 

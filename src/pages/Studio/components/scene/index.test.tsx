@@ -12,9 +12,9 @@ jest.mock('@dnd-kit/sortable', () => ({
   }),
 }));
 
-jest.mock('../../../../modals/scene/update', () => ({
-  UpdateSceneModal: ({ isOpen }: { isOpen: boolean }) =>
-    isOpen ? <div>UpdateSceneModal Opened</div> : null,
+jest.mock('../../../../modals/scene', () => ({
+  SceneModal: ({ isOpen }: { isOpen: boolean }) =>
+    isOpen ? <div>SceneModal Opened</div> : null,
 }));
 
 describe('Scene component', () => {
@@ -27,7 +27,7 @@ describe('Scene component', () => {
     episode: 'E01',
     recordDate: '2024-01-01',
     recordLocation: 'Estúdio A',
-    onUpdate: jest.fn(),
+    onFinish: jest.fn(),
   };
 
   it('should render title and description', () => {
@@ -43,6 +43,6 @@ describe('Scene component', () => {
 
 
     fireEvent.click(div);
-    expect(screen.getByText('UpdateSceneModal Opened')).toBeInTheDocument();
+    expect(screen.getByText('SceneModal Opened')).toBeInTheDocument();
   });
 });

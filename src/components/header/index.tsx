@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { CreateSceneModal } from '../../modals/scene/create';
+import { SceneModal } from '../../modals/scene';
 import { useScenesContext } from '../../services/studio/hooks/useScenesContext';
 import { Button } from '../button';
 import { Input } from '../input';
@@ -46,10 +46,9 @@ export function Header() {
 
       <Profile />
 
-      <CreateSceneModal
+      <SceneModal
         isOpen={isCreateSceneModalOpen}
-        onClose={() => setIsCreateSceneModalOpen(false)}
-      />
+        onClose={() => setIsCreateSceneModalOpen(false)} />
     </header>
   );
 }
