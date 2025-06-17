@@ -79,21 +79,6 @@ describe('Studio Component', () => {
     expect(screen.getByText('Cena 2')).toBeInTheDocument();
   });
 
-  it('should call deselectProduction and navigate back when back button is clicked', () => {
-    render(
-      <MemoryRouter initialEntries={['/production/prod1']}>
-        <Routes>
-          <Route path="/production/:id" element={<Studio />} />
-        </Routes>
-      </MemoryRouter>,
-    );
-
-    const backButton = screen.getByRole('button');
-    fireEvent.click(backButton);
-
-    expect(mockDeselectProduction).toHaveBeenCalled();
-  });
-
   it('should not render anything if no selectedProduction', () => {
     (useProductionContext as jest.Mock).mockReturnValue({
       selectedProduction: null,

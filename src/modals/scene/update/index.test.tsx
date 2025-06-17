@@ -28,7 +28,7 @@ describe('UpdateSceneModal', () => {
     expect(screen.getByDisplayValue('Test Scene')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Scene description')).toBeInTheDocument();
     expect(screen.getByDisplayValue('1')).toBeInTheDocument();
-    expect(screen.getByDisplayValue('2025-06-20')).toBeInTheDocument();
+    expect(screen.getByDisplayValue('20/06/2025')).toBeInTheDocument();
     expect(screen.getByDisplayValue('Studio A')).toBeInTheDocument();
   });
 
