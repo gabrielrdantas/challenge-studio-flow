@@ -62,6 +62,7 @@ function ScenesProvider({ children }: { children: ReactNode }) {
 
   const setNewStepScene = (fromScene: SceneDetails, toScene: SceneDetails) => {
     if (!isNextStep(fromScene, toScene)) {
+       toast.error('Você só pode mover a cena para o próximo passo ou para a mesma etapa. ');
       return;
     }
     dispatch({
@@ -81,7 +82,8 @@ function ScenesProvider({ children }: { children: ReactNode }) {
   };
 
   const searchScene = (title: string) => {
-    if (!title.trim()) {
+
+    if (!title?.trim()) {
       dispatch({
         type: 'SET_SCENES_FILTERED',
         payload: [],
@@ -92,7 +94,7 @@ function ScenesProvider({ children }: { children: ReactNode }) {
     dispatch({
       type: 'SET_SCENES_FILTERED',
       payload: state.scenes.filter((scene) =>
-        scene.title.trim().toLowerCase().includes(title.trim().toLowerCase()),
+        scene?.title?.trim()?.toLowerCase().includes(title?.trim().toLowerCase()),
       ),
     });
   };

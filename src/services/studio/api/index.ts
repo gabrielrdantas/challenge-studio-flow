@@ -2,14 +2,14 @@ import { type Scene } from '../reducers/SceneReducer';
 
 const fetchScenes = async () => {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/scenes`);
-  if (!response.ok) throw new Error('Failed to fetch scenes');
+  if (!response.ok) throw new Error('Falha ao buscar cenas');
 
   const data = await response.json();
   return data;
 };
 
 const saveScene = async (newScene: Scene) => {
-  const response = await fetch(`${import.meta.env.VITE_API_URL}/scenes`, {
+  const response = await fetch(`${import.meta.env.VITE_API_URL}/scenes/create`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -21,6 +21,7 @@ const saveScene = async (newScene: Scene) => {
       version: 1,
     }),
   });
+  if (!response.ok) throw new Error('Falha ao salvar cena');
   const data = await response.json();
   return data;
 };
@@ -37,6 +38,7 @@ const updateScene = async (editedScene: Scene) => {
       version: Math.random(),
     }),
   });
+  if (!response.ok) throw new Error('Falha ao atualizar cena');
   const data = await response.json();
   return data;
 };

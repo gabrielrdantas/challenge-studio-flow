@@ -19,7 +19,13 @@ export function Header() {
     }, 350);
 
     return () => clearTimeout(timeout);
-  }, [search, searchScene]);
+  }, [search]);
+
+  useEffect(() => {
+    if(!selectedProduction) {
+      searchScene('');
+    }
+  }, [selectedProduction]);
 
   const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);
