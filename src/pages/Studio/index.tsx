@@ -120,7 +120,7 @@ const Studio = () => {
                 label={steps[step]}
                 count={scenesByStep.length}
               >
-                <SortableContext items={scenesByStep} strategy={verticalListSortingStrategy}>
+                <SortableContext items={scenesByStep.map(scene => scene.id)} strategy={verticalListSortingStrategy}>
                   {scenesByStep.map((scene) => (
                     <Scene key={scene.id} {...scene} onUpdate={handleSceneUpdate} />
                   ))}

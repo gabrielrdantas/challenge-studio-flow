@@ -31,7 +31,7 @@ const Scene = ({
 }: SceneProps) => {
   const [isUpdateSceneModalOpen, setIsUpdateSceneModalOpen] = useState(false);
 
-  const { attributes, listeners, setNodeRef, transform, active } = useSortable({
+  const { attributes, listeners, setNodeRef, transition, transform, active, isDragging } = useSortable({
     id,
     attributes: { role: 'button' },
     data: {
@@ -62,6 +62,11 @@ const Scene = ({
     return (
       <div
         ref={setNodeRef}
+        style={{
+          transform: CSS.Transform.toString(transform),
+          transition,
+          opacity: isDragging ? 0.5 : 1,
+        }}
         {...listeners}
         {...attributes}
         className='flex flex-col gap-2 p-2 cursor-pointer bg-primary opacity-50 text-accent rounded-lg border border-border'
