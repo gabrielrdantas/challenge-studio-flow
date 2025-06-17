@@ -2,7 +2,7 @@ import { createContext, useEffect, useReducer } from 'react';
 import { type ReactNode } from 'react';
 
 import { fetchProductions } from '../api';
-import { type TProduction, initialState, productionReducer } from '../reducers/production';
+import { type TProduction, initialState, productionReducer } from '../reducers/ProductionReducer';
 
 type ProductionState = {
   productions: TProduction[];

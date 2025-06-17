@@ -1,4 +1,4 @@
-import { type Scene } from '../reducers/scenes';
+import { type Scene } from '../reducers/SceneReducer';
 
 const fetchScenes = async () => {
   const response = await fetch(`${import.meta.env.VITE_API_URL}/scenes`);

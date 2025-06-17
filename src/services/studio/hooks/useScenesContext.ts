@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 
-import { ScenesContext } from '../../context/scenes';
+import { ScenesContext } from '../context/ScenesProvider';
 
 export const useScenesContext = () => {
   const context = useContext(ScenesContext);

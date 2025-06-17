@@ -4,7 +4,7 @@ import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@
 import { XIcon } from 'lucide-react';
 
 import { updateScene } from '../../../services/studio/api';
-import { type Scene as SceneDetails } from '../../../services/studio/reducers/scenes';
+import { type Scene as SceneDetails } from '../../../services/studio/reducers/SceneReducer';
 
 interface ModalProps {
   isOpen: boolean;
@@ -52,12 +52,15 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
   };
 
   const handleSave = async () => {
+
+    
     if (!editedScene || !onUpdate) return;
+
 
     setIsSaving(true);
     setErrorMessage(null);
     try {
-      updateScene(editedScene);
+      await updateScene(editedScene);
 
       onUpdate(editedScene);
       onClose();
@@ -111,7 +114,7 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
                 {editedScene ? (
                   <div className='space-y-4'>
                     <div>
-                      <h4 className='text-sm font-medium text-primary/70'>Título</h4>
+                      <label className='text-sm font-medium text-primary/70'>Título</label>
                       <input
                         type='text'
                         value={editedScene.title}
@@ -121,7 +124,7 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
                     </div>
 
                     <div>
-                      <h4 className='text-sm font-medium text-primary/70'>Descrição</h4>
+                      <label className='text-sm font-medium text-primary/70'>Descrição</label>
                       <textarea
                         value={editedScene.description}
                         onChange={(e) => handleChange('description', e.target.value)}
@@ -131,7 +134,7 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
                     </div>
 
                     <div>
-                      <h4 className='text-sm font-medium text-primary/70'>Episódio</h4>
+                      <label className='text-sm font-medium text-primary/70'>Episódio</label>
                       <input
                         type='text'
                         value={editedScene.episode}
@@ -141,7 +144,7 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
                     </div>
 
                     <div>
-                      <h4 className='text-sm font-medium text-primary/70'>Status</h4>
+                      <label className='text-sm font-medium text-primary/70'>Status</label>
                       <select
                         value={editedScene.step}
                         onChange={(e) => handleChange('step', Number(e.target.value))}
@@ -156,7 +159,7 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
                     </div>
 
                     <div>
-                      <h4 className='text-sm font-medium text-primary/70'>Data de Gravação</h4>
+                      <label className='text-sm font-medium text-primary/70'>Data de Gravação</label>
                       <input
                         type='date'
                         value={editedScene.recordDate}
@@ -166,7 +169,7 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
                     </div>
 
                     <div>
-                      <h4 className='text-sm font-medium text-primary/70'>Local de Gravação</h4>
+                      <label className='text-sm font-medium text-primary/70'>Local de Gravação</label>
                       <input
                         type='text'
                         value={editedScene.recordLocation}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 
 import { CreateSceneModal } from '../../modals/scene/create';
-import { useScenesContext } from '../../services/studio/hooks/scenes';
+import { useScenesContext } from '../../services/studio/hooks/useScenesContext';
 import { Button } from '../button';
 import { Input } from '../input';
 import { Profile } from '../profile';
@@ -18,7 +18,7 @@ export function Header() {
     }, 350);
 
     return () => clearTimeout(timeout);
-  }, [search]);
+  }, [search, searchScene]);
 
   const handleSearchInput = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearch(event.target.value);

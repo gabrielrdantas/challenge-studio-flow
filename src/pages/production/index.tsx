@@ -3,8 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { PlayIcon } from 'lucide-react';
 
 import { Card } from '../../components/card';
-import { useProductionContext } from '../../services/production/hooks/production';
-import { type TProduction } from '../../services/production/reducers/production';
+import { useProductionContext } from '../../services/production/hooks/useProductionsContext';
+import { type TProduction } from '../../services/production/reducers/ProductionReducer';
 
 export const Production = () => {
   const { productions, selectProduction } = useProductionContext();

@@ -1,24 +1,47 @@
+# Node
+node_modules/
+.pnpm/
+
 # Logs
-logs
-*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
-lerna-debug.log*
 
-node_modules
-dist
-dist-ssr
-*.local
+# Builds
+dist/
+build/
+out/
+.next/
+.cache/
+.vite/
 
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Environment
+.env*
+!.env.example
+
+# Test
+coverage/
+*.test.ts.snap
+jest.setup.js
+
+# IDEs
+.vscode/
+.idea/
+
+# OS
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+Thumbs.db
+
+# Misc
+*.local
+*.log
+*.tgz
+*.swp
+
+# Storybook
+.storybook-out/
+storybook-static/
+
+# Optional: VS Code settings that shouldn't go to git
+*.code-workspace

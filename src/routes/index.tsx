@@ -4,21 +4,17 @@ import { Layout } from '../components/layout';
 import Production from '../pages/production';
 import Studio from '../pages/studio';
 
-const router = createBrowserRouter([
+
+export const routesConfig = [
   {
     element: <Layout />,
     children: [
-      {
-        path: 'production/:id',
-        element: <Studio />,
-      },
-      {
-        path: '/',
-        element: <Production />,
-      },
+      { path: '/', element: <Production /> },
+      { path: 'production/:id', element: <Studio /> },
     ],
   },
-]);
+];
+const router = createBrowserRouter(routesConfig);
 
 const Routes = () => {
   return <RouterProvider router={router} />;

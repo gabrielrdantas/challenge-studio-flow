@@ -1,6 +1,6 @@
 import Routes from './routes';
-import { ProductionProvider } from './services/production/contexts/production';
-import { ScenesProvider } from './services/studio/context/scenes';
+import { ProductionProvider } from './services/production/contexts/ProductionProvider';
+import { ScenesProvider } from './services/studio/context/ScenesProvider';
 import './styles/global.css';
 
 function App() {

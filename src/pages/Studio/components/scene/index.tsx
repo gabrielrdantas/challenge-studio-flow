@@ -4,7 +4,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 import { UpdateSceneModal } from '../../../../modals/scene/update';
-import { type Scene as SceneType } from '../../../../services/studio/reducers/scenes';
+import { type Scene as SceneType } from '../../../../services/studio/reducers/SceneReducer';
 
 interface SceneProps {
   id: string;
@@ -18,10 +18,6 @@ interface SceneProps {
   onUpdate?: (scene: SceneType) => void;
 }
 
-const heavyComputation = (text: string) => {
-  return text.trim();
-};
-
 const Scene = ({
   id,
   title,
@@ -34,14 +30,6 @@ const Scene = ({
   onUpdate,
 }: SceneProps) => {
   const [isUpdateSceneModalOpen, setIsUpdateSceneModalOpen] = useState(false);
-
-  const computedTitle = useMemo(() => {
-    return heavyComputation(title);
-  }, [title]);
-
-  const computedDescription = useMemo(() => {
-    return heavyComputation(description);
-  }, [description]);
 
   const { attributes, listeners, setNodeRef, transform, active } = useSortable({
     id,
@@ -103,11 +91,11 @@ const Scene = ({
         {...listeners}
         {...attributes}
         onClick={() => setIsUpdateSceneModalOpen(true)}
-        className='flex flex-col gap-2 p-2 cursor-pointer bg-primary text-accent rounded-lg border border-border'
+        className='flex flex-col gap-2 p-2 cursor-pointer bg-primary text-accent rounded-lg border border-border scene-card'
       >
         <div className='flex flex-col gap-1'>
-          <span className='text-sm font-medium'>{computedTitle}</span>
-          <span className='text-xs'>{computedDescription}</span>
+          <span className='text-sm font-medium'>{title.trim()}</span>
+          <span className='text-xs'>{description.trim()}</span>
         </div>
       </div>
     </div>

@@ -16,8 +16,8 @@ import { ArrowLeftIcon } from 'lucide-react';
 import { Button } from '../../components/button';
 import { Column } from '../../components/column';
 import Title from '../../components/title';
-import { useProductionContext } from '../../services/production/hooks/production';
-import { useScenesContext } from '../../services/studio/hooks/scenes';
+import { useProductionContext } from '../../services/production/hooks/useProductionsContext';
+import { useScenesContext } from '../../services/studio/hooks/useScenesContext';
 import { Scene, type SceneProps } from './components/scene';
 
 const steps: Record<number, string> = {

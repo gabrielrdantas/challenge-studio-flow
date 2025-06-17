@@ -3,9 +3,9 @@ import { type ReactNode } from 'react';
 
 import { arrayMove } from '@dnd-kit/sortable';
 
-import { fetchScenes } from '../../api';
-import { type Scene as SceneDetails } from '../../reducers/scenes';
-import { initialSceneState, sceneReducer } from '../../reducers/scenes';
+import { fetchScenes } from '../api';
+import { type Scene as SceneDetails } from '../reducers/SceneReducer';
+import { initialSceneState, sceneReducer } from '../reducers/SceneReducer';
 
 interface ScenesContextType {
   scenes: SceneDetails[];

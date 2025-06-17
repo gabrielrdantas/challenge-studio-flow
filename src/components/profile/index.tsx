@@ -35,6 +35,7 @@ export function Profile() {
       </Popover>
 
       <button
+        id="theme-toggle-button"
         onClick={toggleTheme}
         className={`w-10 h-10 rounded-full shadow-md flex items-center justify-center transition-colors cursor-pointer
           ${theme === 'dark' ? 'bg-zinc-800 text-white' : 'bg-white text-black'}`}
