@@ -81,7 +81,6 @@ const Studio = () => {
   );
 
   const handleBackProduction = () => {
-    deselectProduction();
     navigate('/');
   };
 

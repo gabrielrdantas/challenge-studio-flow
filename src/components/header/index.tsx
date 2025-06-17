@@ -5,13 +5,14 @@ import { useScenesContext } from '../../services/studio/hooks/useScenesContext';
 import { Button } from '../button';
 import { Input } from '../input';
 import { Profile } from '../profile';
+import { useProductionContext } from '../../services/production/hooks/useProductionsContext';
 
 export function Header() {
   const [search, setSearch] = useState('');
 
   const [isCreateSceneModalOpen, setIsCreateSceneModalOpen] = useState(false);
   const { searchScene } = useScenesContext();
-
+  const { selectedProduction } = useProductionContext();
   useEffect(() => {
     const timeout = setTimeout(() => {
       searchScene(search);
@@ -30,12 +31,12 @@ export function Header() {
         <h1 className='text-xl font-semibold text-foreground'>StudioFlow</h1>
       </div>
 
-      <div className='flex items-center gap-2 grow justify-center max-w-xl'>
+      {selectedProduction && <div className='flex items-center gap-2 grow justify-center max-w-xl'>
         <Input placeholder='Digite o titulo da cena' className='grow' onInput={handleSearchInput} />
         <Button variant='default' onClick={() => setIsCreateSceneModalOpen(true)}>
           Criar
         </Button>
-      </div>
+      </div>}
 
       <Profile />
 

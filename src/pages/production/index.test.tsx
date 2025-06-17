@@ -40,6 +40,7 @@ describe('Production Component', () => {
     (useProductionContext as jest.Mock).mockReturnValue({
       productions: mockProductions,
       selectProduction: mockSelectProduction,
+      deselectProduction: jest.fn(),
     });
   });
 
@@ -69,6 +70,7 @@ describe('Production Component', () => {
     (useProductionContext as jest.Mock).mockReturnValue({
       productions: null,
       selectProduction: jest.fn(),
+      deselectProduction: jest.fn(),
     });
 
     const { container } = render(<Production />, { wrapper: MemoryRouter });
