@@ -55,13 +55,20 @@ describe('CreateSceneModal', () => {
   });
 
   it('should show error message when saveScene fails', async () => {
+    const toastErrorSpy = jest.spyOn(require('sonner').toast, 'error').mockImplementation(() => {});
+    
     createSceneMock.mockRejectedValueOnce(new Error('Erro ao salvar cena. Tente novamente.'));
 
     render(<CreateSceneModal isOpen onClose={mockOnClose} onCreate={mockOnCreate} />);
+
     fireEvent.click(screen.getByRole('button', { name: /^Criar$/i }));
 
     await waitFor(() => {
-      expect(screen.getByText(/Erro ao salvar cena. Tente novamente./i)).toBeInTheDocument();
+      expect(toastErrorSpy).toHaveBeenCalledWith(
+        'Erro ao salvar cena. Tente novamente.'
+      );
     });
+
+    toastErrorSpy.mockRestore();
   });
 });

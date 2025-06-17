@@ -1,3 +1,5 @@
+
+import { toast } from 'sonner';
 import { createContext, useEffect, useReducer } from 'react';
 import { type ReactNode } from 'react';
 
@@ -29,10 +31,12 @@ function ProductionProvider({ children }: { children: ReactNode }) {
       const data = await fetchProductions();
       dispatch({ type: 'SET_PRODUCTIONS', payload: data });
     } catch (error) {
+      const message = error instanceof Error ? error.message : 'Failed to fetch productions';
       dispatch({
         type: 'SET_ERROR',
-        payload: error instanceof Error ? error.message : 'An error occurred',
+        payload :message,
       });
+      toast.error(message);
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }

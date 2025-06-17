@@ -52,15 +52,22 @@ describe('UpdateSceneModal', () => {
     });
   });
 
-  it('should show an error message if update fails', async () => {
-    updateSceneMock.mockRejectedValueOnce(new Error('Erro ao salvar cena. Tente novamente.'));
+it('should call toast.error if update fails', async () => {
+  const toastErrorSpy = jest.spyOn(require('sonner').toast, 'error').mockImplementation(() => {});
+  
+  updateSceneMock.mockRejectedValueOnce(new Error('Erro ao salvar cena. Tente novamente.'));
 
-    render(<UpdateSceneModal isOpen scene={mockScene} onClose={jest.fn()} onUpdate={jest.fn()} />);
+  render(<UpdateSceneModal isOpen scene={mockScene} onClose={jest.fn()} onUpdate={jest.fn()} />);
 
-    fireEvent.click(screen.getByText(/Salvar/i));
+  fireEvent.click(screen.getByText(/Salvar/i));
 
-    await waitFor(() => {
-      expect(screen.getByText(/Erro ao salvar cena. Tente novamente./i)).toBeInTheDocument();
-    });
+  await waitFor(() => {
+    expect(toastErrorSpy).toHaveBeenCalledWith(
+      'Erro ao salvar cena. Tente novamente.'
+    );
   });
+
+  toastErrorSpy.mockRestore();
+});
+
 });

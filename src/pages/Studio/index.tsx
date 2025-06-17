@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 import {
@@ -41,6 +41,7 @@ const Studio = () => {
 
   const handleDragStart = (event: DragStartEvent) => {
     const { active } = event;
+    
     if (filteredScene.length > 0) {
       return;
     }
@@ -73,7 +74,7 @@ const Studio = () => {
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        delay: filteredScene.length > 0 ? 99999 : 100,
+        delay: filteredScene.length > 0 ? 99999 : 200,
         tolerance: 5,
       },
     }),
@@ -84,7 +85,7 @@ const Studio = () => {
     navigate('/');
   };
 
-  useCallback(() => {
+  useEffect(() => {
     if (!selectedProduction && productionId) {
       selectProductionById(productionId);
     }

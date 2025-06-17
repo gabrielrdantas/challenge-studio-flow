@@ -1,4 +1,5 @@
 import { Fragment, useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { XIcon } from 'lucide-react';
@@ -23,13 +24,12 @@ const steps: Record<number, string> = {
 
 const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
   const [editedScene, setEditedScene] = useState<SceneDetails | undefined>(scene);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
     setEditedScene(scene);
-  }, [scene]);
+  }, []);
 
   const statusList = useMemo(() => {
     return Object.values(steps).slice(scene.step - 1, scene.step + 1) as string[];
@@ -53,20 +53,16 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
 
   const handleSave = async () => {
 
-    
     if (!editedScene || !onUpdate) return;
-
-
     setIsSaving(true);
-    setErrorMessage(null);
+
     try {
       await updateScene(editedScene);
-
       onUpdate(editedScene);
       onClose();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao salvar cena. Tente novamente.';
-      setErrorMessage(message);
+      toast.error(message);
     } finally {
       setIsSaving(false);
     }
@@ -177,12 +173,6 @@ const UpdateSceneModal = ({ isOpen, onClose, scene, onUpdate }: ModalProps) => {
                         className='mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-primary/50'
                       />
                     </div>
-
-                    {errorMessage && (
-                      <div className='rounded-md bg-red-100 border border-red-300 px-3 py-2 text-sm text-red-700'>
-                        {errorMessage}
-                      </div>
-                    )}
 
                     <div className='mt-6 flex justify-end gap-3'>
                       <button

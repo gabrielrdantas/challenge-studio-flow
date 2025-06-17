@@ -67,8 +67,8 @@ const Scene = ({
         className='flex flex-col gap-2 p-2 cursor-pointer bg-primary opacity-50 text-accent rounded-lg border border-border'
       >
         <div className='flex flex-col gap-1'>
-          <span className='text-sm font-medium'>{computedTitle}</span>
-          <span className='text-xs'>{computedDescription}</span>
+          <span className='text-sm font-medium'>{title?.trim()}</span>
+          <span className='text-xs'>{description?.trim()}</span>
         </div>
       </div>
     );

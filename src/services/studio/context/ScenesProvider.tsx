@@ -1,3 +1,4 @@
+import { toast } from 'sonner';
 import { createContext, useEffect, useReducer } from 'react';
 import { type ReactNode } from 'react';
 
@@ -28,10 +29,12 @@ function ScenesProvider({ children }: { children: ReactNode }) {
       const data = await fetchScenes();
       dispatch({ type: 'SET_SCENES', payload: data });
     } catch (err) {
+      const message = err instanceof Error ? err.message : 'Failed to fetch scenes';
       dispatch({
         type: 'SET_ERROR',
-        payload: err instanceof Error ? err.message : 'Unknown error',
+        payload: message,
       });
+      toast.error(message);
     } finally {
       dispatch({ type: 'SET_LOADING', payload: false });
     }
@@ -42,10 +45,10 @@ function ScenesProvider({ children }: { children: ReactNode }) {
   };
 
   const isNextStep = (fromScene: SceneDetails, toScene: SceneDetails) => {
-    return fromScene.step < toScene.step && state.filteredScene.length === 0;
+    return (toScene.step - fromScene.step) === 1  && state.filteredScene.length === 0;
   };
   const setSortableScene = (fromScene: SceneDetails, toScene: SceneDetails) => {
-    if (!isSameStep(fromScene, toScene) && state.filteredScene.length > 0) {
+    if (!isSameStep(fromScene, toScene) || state.filteredScene.length > 0) {
       return;
     }
     const currentScenes = state.scenes.filter((scene) => scene.step === fromScene.step);

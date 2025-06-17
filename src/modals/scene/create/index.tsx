@@ -1,6 +1,7 @@
 import { Fragment, useState } from 'react';
 import { Dialog, DialogPanel, DialogTitle, Transition, TransitionChild } from '@headlessui/react';
 import { XIcon } from 'lucide-react';
+import { toast } from 'sonner';
 
 import { saveScene } from '../../../services/studio/api';
 import { type Scene as SceneDetails } from '../../../services/studio/reducers/SceneReducer';
@@ -21,7 +22,6 @@ const steps: Record<number, string> = {
 
 const CreateSceneModal = ({ isOpen, onClose, onCreate }: ModalProps) => {
   const [newScene, setNewScene] = useState<SceneDetails>({} as SceneDetails);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleChange = (field: keyof SceneDetails, value: string | number) => {
@@ -30,15 +30,13 @@ const CreateSceneModal = ({ isOpen, onClose, onCreate }: ModalProps) => {
 
   const handleSave = async () => {
     setIsSaving(true);
-    setErrorMessage(null);
-
     try {
       await saveScene(newScene);
       onCreate?.(newScene);
       onClose?.();
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Erro ao criar cena. Tente novamente.';
-      setErrorMessage(message);
+      toast.error(message);
     } finally {
       setIsSaving(false);
     }
@@ -151,12 +149,6 @@ const CreateSceneModal = ({ isOpen, onClose, onCreate }: ModalProps) => {
                       className="mt-1 w-full rounded-md border border-border bg-background px-3 py-2 text-primary focus:outline-none focus:ring-2 focus:ring-primary/50"
                     />
                   </div>
-
-                  {errorMessage && (
-                    <div className="rounded-md bg-red-100 border border-red-300 px-3 py-2 text-sm text-red-700">
-                      {errorMessage}
-                    </div>
-                  )}
 
                   <div className="mt-6 flex justify-end gap-3">
                     <button
