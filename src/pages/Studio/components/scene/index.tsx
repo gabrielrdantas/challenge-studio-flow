@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -18,7 +18,7 @@ interface SceneProps {
   onUpdate?: (scene: SceneType) => void;
 }
 
-const Scene = ({
+const Scene = React.memo(({
   id,
   title,
   description,
@@ -45,7 +45,7 @@ const Scene = ({
     },
   });
 
-  const sceneDetails: SceneType = {
+  const sceneDetails = useMemo(() => ({
     id,
     title,
     description,
@@ -54,9 +54,11 @@ const Scene = ({
     columnId,
     recordDate,
     recordLocation,
-  };
+  }), [id, title, description, step, episode, columnId, recordDate, recordLocation]);
 
-  const handleUpdate = (updatedScene: SceneType) => onUpdate?.(updatedScene);
+  const handleUpdate = useCallback((updatedScene: SceneType) => {
+    onUpdate?.(updatedScene);
+  }, [onUpdate]);
 
   if (active?.id === id) {
     return (
@@ -105,6 +107,7 @@ const Scene = ({
       </div>
     </div>
   );
-};
+});
 
 export { Scene, type SceneProps };
+

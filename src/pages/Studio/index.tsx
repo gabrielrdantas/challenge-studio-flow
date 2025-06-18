@@ -39,12 +39,13 @@ const Studio = () => {
 
   const navigate = useNavigate();
 
-  const handleDragStart = (event: DragStartEvent) => {
+  const handleBackProduction = useCallback(() => {
+    navigate('/');
+  }, [navigate]);
+
+  const handleDragStart = useCallback((event: DragStartEvent) => {
     const { active } = event;
-    
-    if (filteredScene.length > 0) {
-      return;
-    }
+    if (filteredScene.length > 0) return;
 
     setActiveScene({
       id: active.id as string,
@@ -56,23 +57,24 @@ const Studio = () => {
       recordDate: active.data.current?.recordDate,
       recordLocation: active.data.current?.recordLocation,
     });
-  };
+  }, [filteredScene]);
 
-  const handleDragEnd = (event: DragEndEvent) => {
+  const handleDragEnd = useCallback((event: DragEndEvent) => {
     const { active, over } = event;
     if (!active || !over) return;
     setActiveScene(null);
 
     const fromScene = scenes.find((scene) => scene.id === (active.id as string));
     const toScene = scenes.find((scene) => scene.id === (over.id as string));
-
     if (!fromScene || !toScene) return;
+
     if (fromScene.step === toScene.step) {
       setSortableScene(fromScene, toScene);
-      return
+      return;
     }
     setNewStepScene(fromScene, toScene);
-  };
+  }, [scenes, setNewStepScene, setSortableScene]);
+
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -82,10 +84,6 @@ const Studio = () => {
       },
     }),
   );
-
-  const handleBackProduction = () => {
-    navigate('/');
-  };
 
   useEffect(() => {
     if (!selectedProduction && productionId) {
